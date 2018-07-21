@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Activout.FuelPrice
+namespace Activout.FuelPrice.Twitter
 {
     public class TwitterError
     {
