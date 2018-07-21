@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Activout.RestClient;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Activout.FuelPrice.Twitter
 {
@@ -15,13 +16,7 @@ namespace Activout.FuelPrice.Twitter
     public interface ITwitterAuthClient
     {
         [HttpPost("/oauth2/token")]
-        Task<Oauth2Token> GetOauth2Token([FormParam("grant_type")] string grantType = "client_credentials");
-    }
-
-    public class Oauth2Token
-    {
-        [JsonProperty("token_type")] public string TokenType { get; set; }
-        [JsonProperty("access_token")] public string AccessToken { get; set; }
+        Task<JObject> GetOauth2Token([FormParam("grant_type")] string grantType = "client_credentials");
     }
     
     [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
@@ -45,7 +40,8 @@ namespace Activout.FuelPrice.Twitter
                 .HttpClient(basicAuthHttpClient)
                 .Build<ITwitterAuthClient>();
 
-            return (await twitterAuth.GetOauth2Token()).AccessToken;
+            dynamic response = await twitterAuth.GetOauth2Token();
+            return response.access_token;
         }
     }
 }
