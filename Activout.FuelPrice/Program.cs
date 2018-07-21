@@ -59,13 +59,8 @@ namespace Activout.FuelPrice
 
             var timeLine = userTimelineClient.QueryByScreenName("St1Sverige").Result;
 
-            for (;;)
+            while (timeLine.Count != 0)
             {
-                if (timeLine.Count == 0)
-                {
-                    return;
-                }
-
                 foreach (var entry in timeLine)
                 {
                     if (!entry.Text.ToLower().Contains("ronneby")) continue;
