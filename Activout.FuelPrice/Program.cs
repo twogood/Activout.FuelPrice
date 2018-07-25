@@ -15,18 +15,8 @@ namespace Activout.FuelPrice
     {
         public static void Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", optional: true)
-                    .AddCommandLine(args)
-                ;
-            var configuration = builder.Build();
-
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddRestClient();
-            serviceCollection.AddSingleton<TwitterAuth>();
-            serviceCollection.AddSingleton<TwitterUserTimelineFactory>();
-            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var configuration = GetConfig(args);
+            var serviceProvider = GetServiceProvider();
 
             var twitterConfig = configuration.GetSection("twitter");
             var consumerKey = twitterConfig["consumerKey"];
@@ -61,6 +51,25 @@ namespace Activout.FuelPrice
                 var maxId = timeLine[timeLine.Count - 1].Id - 1;
                 timeLine = userTimelineClient.QueryByScreenName(screenName, maxId).Result;
             }
+        }
+
+        private static ServiceProvider GetServiceProvider()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddRestClient();
+            serviceCollection.AddSingleton<TwitterAuth>();
+            serviceCollection.AddSingleton<TwitterUserTimelineFactory>();
+            return serviceCollection.BuildServiceProvider();
+        }
+
+        private static IConfigurationRoot GetConfig(string[] args)
+        {
+            var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", optional: true)
+                    .AddCommandLine(args)
+                ;
+            return builder.Build();
         }
     }
 }
